@@ -1,0 +1,176 @@
+/* ==========================================================
+   RED GRID — a defense-network terminal theme
+   Dark void, red phosphor glow, faint scanlines.
+   Original design. Drop-in tokens + base styles.
+   ========================================================== */
+
+:root {
+  /* --- core palette --- */
+  --rg-void:        #070000;  /* page background            */
+  --rg-surface:     #120304;  /* panels, cards, sidebar     */
+  --rg-surface-2:   #1c0607;  /* hover / raised             */
+  --rg-border:      #3d0e0b;  /* hairlines                  */
+  --rg-border-hot:  #7a1a12;  /* focused / active borders   */
+
+  --rg-text:        #ffd2cb;  /* body text (high contrast)  */
+  --rg-text-dim:    #c7766b;  /* secondary text             */
+  --rg-text-faint:  #7d3a32;  /* timestamps, placeholders   */
+
+  --rg-signal:      #ff2b1c;  /* primary accent, buttons    */
+  --rg-signal-soft: #ff5a47;  /* links, highlights          */
+  --rg-warn:        #ffb020;  /* amber warnings             */
+  --rg-ok:          #ff8a6b;  /* "success" stays on-palette */
+
+  /* --- glow --- */
+  --rg-glow:        0 0 6px rgba(255, 43, 28, 0.55),
+                    0 0 18px rgba(255, 43, 28, 0.25);
+  --rg-glow-text:   0 0 4px rgba(255, 60, 40, 0.45);
+
+  /* --- type --- */
+  --rg-font-mono:   "JetBrains Mono", "IBM Plex Mono", "Fira Code",
+                    ui-monospace, SFMono-Regular, Menlo, monospace;
+  --rg-font-ui:     var(--rg-font-mono);
+  --rg-tracking:    0.02em;
+
+  /* --- shape --- */
+  --rg-radius:      2px;      /* hard, militaristic corners */
+}
+
+/* ---------- base ---------- */
+html, body {
+  background: var(--rg-void);
+  color: var(--rg-text);
+  font-family: var(--rg-font-ui);
+  letter-spacing: var(--rg-tracking);
+}
+
+::selection {
+  background: var(--rg-signal);
+  color: var(--rg-void);
+}
+
+a {
+  color: var(--rg-signal-soft);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--rg-border-hot);
+}
+a:hover {
+  color: var(--rg-signal);
+  text-shadow: var(--rg-glow-text);
+}
+
+h1, h2, h3, h4 {
+  color: var(--rg-signal-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-shadow: var(--rg-glow-text);
+}
+
+/* ---------- surfaces ---------- */
+.rg-panel,
+aside, nav, dialog {
+  background: var(--rg-surface);
+  border: 1px solid var(--rg-border);
+  border-radius: var(--rg-radius);
+}
+
+/* ---------- code ---------- */
+pre, code {
+  font-family: var(--rg-font-mono);
+  background: #0d0102;
+  color: #ff9c8f;
+  border: 1px solid var(--rg-border);
+  border-radius: var(--rg-radius);
+}
+pre { box-shadow: inset 0 0 24px rgba(255, 43, 28, 0.06); }
+
+/* ---------- inputs ---------- */
+input, textarea, select {
+  background: #0b0102;
+  color: var(--rg-text);
+  border: 1px solid var(--rg-border);
+  border-radius: var(--rg-radius);
+  caret-color: var(--rg-signal);
+  font-family: var(--rg-font-mono);
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--rg-signal);
+  box-shadow: var(--rg-glow);
+}
+::placeholder { color: var(--rg-text-faint); }
+
+/* ---------- buttons ---------- */
+button {
+  background: transparent;
+  color: var(--rg-signal-soft);
+  border: 1px solid var(--rg-border-hot);
+  border-radius: var(--rg-radius);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: var(--rg-font-mono);
+}
+button:hover {
+  background: var(--rg-signal);
+  color: var(--rg-void);
+  box-shadow: var(--rg-glow);
+}
+
+/* ---------- scrollbars ---------- */
+* { scrollbar-color: var(--rg-border-hot) var(--rg-void); }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--rg-void); }
+::-webkit-scrollbar-thumb { background: var(--rg-border-hot); }
+
+/* ---------- CRT scanlines (non-interactive overlay) ---------- */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483647;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.18) 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* faint red vignette at the edges */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483646;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(60, 0, 0, 0.35) 100%
+  );
+}
+
+/* ---------- subtle phosphor flicker ---------- */
+@keyframes rg-flicker {
+  0%, 100% { opacity: 1; }
+  92%      { opacity: 1; }
+  93%      { opacity: 0.94; }
+  94%      { opacity: 1; }
+}
+body { animation: rg-flicker 7s infinite; }
+
+/* blinking block cursor helper */
+.rg-cursor::after {
+  content: "\2588";
+  color: var(--rg-signal);
+  margin-left: 2px;
+  animation: rg-blink 1.1s steps(1) infinite;
+}
+@keyframes rg-blink { 50% { opacity: 0; } }
+
+/* respect people who don't want motion */
+@media (prefers-reduced-motion: reduce) {
+  body, .rg-cursor::after { animation: none !important; }
+}
